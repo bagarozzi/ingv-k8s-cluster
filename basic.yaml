@@ -1,0 +1,55 @@
+# Disable Linux's swap
+sudo swapoff -a
+
+# Enable IP forwarding
+sudo sysctl net.ipv4.ip_forward=1
+
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+# Add keyrings and repo
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+# Install containerd.io
+sudo apt-get install containerd.io
+
+# Create the configuration file
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+# Sostituire SystemdCgroup = false in SystemdCgroup = true usando il sed
+# per il momento faccio con nano
+sudo nano /etc/containerd/config.toml
+
+# Riavvia containerd
+sudo systemctl enable containerd
+sudo systemctl restart containerd
+
+# Update and install packages
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+# Enable kubelet
+sudo systemctl enable --now kubelet
+
+# Start the cluster
+sudo kubeadm init --pod-network-cidr 192.168.0.0/16
+
+# Install calico
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+# Add nodes: for each new node
+# On master
+kubeadm join 172.17.10.132:6443 --token 0xxxxx --discovery-token-ca-cert-hash xxxxx
+# Execute its output on the worker node
+kubeadm join 172.17.10.132:6443 --token xxxxxxxx --discovery-token-ca-cert-hash xxxxxx
