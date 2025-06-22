@@ -30,7 +30,7 @@ runcmd:
   - sudo containerd config default | sudo tee /etc/containerd/config.toml
 
   # TODO: Set systemd as the cgroup manager
-  - sudo nano /etc/containerd/config.toml
+  - sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 
   # Enable IP Forwarding
   - sudo sysctl net.ipv4.ip_forward=1
@@ -51,6 +51,9 @@ runcmd:
 
   # TODO: add the configuration to the user's home directory as instructed by the
   # kubeadm init command result
+  - sudo su -c "mkdir -p $HOME/.kube ubuntu"
+  - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  - sudo su -c "sudo chown $(id -u):$(id -g) $HOME/.kube/config" ubuntu
 
   # Install calico
-  - kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  - sudo su -c "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml" ubuntu
