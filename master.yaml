@@ -29,6 +29,9 @@ runcmd:
   # TODO: Set systemd as the cgroup manager
   sudo nano /etc/containerd/config.toml
 
+  # Enable IP Forwarding
+  sudo sysctl net.ipv4.ip_forward=1
+
   # Restart and enable containerd
   sudo systemctl enable containerd
   sudo systemctl restart containerd
