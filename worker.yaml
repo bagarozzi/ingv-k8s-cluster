@@ -10,9 +10,11 @@ packages:
   - gpg
 
 runcmd:
+  # Enable ports as specified in the Kubernetes documentation 
   - sudo ufw allow 10250,10256/tcp
   - sudo ufw allow 30000:32767/tcp
   - sudo ufw allow 30000:32767/udp
+
   # Add the Docker and Kuberntes repositories
   - sudo install -m 0755 -d /etc/apt/keyrings
   - sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
