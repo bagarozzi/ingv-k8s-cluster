@@ -20,8 +20,8 @@ runcmd:
   - sudo apt-get update
 
   # Add the Kubernetes repositories
-  - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-  - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
   - sudo apt-get update
 
   # Install Containerd container runtime
@@ -53,22 +53,9 @@ runcmd:
 
   # TODO: add the configuration to the user's home directory as instructed by the
   # kubeadm init command result
-  - sudo su -c "mkdir -p $HOME/.kube" ubuntu
-  - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  - sudo su -c "sudo chown $(id -u):$(id -g) $HOME/.kube/config" ubuntu
+  - sudo su -c "mkdir -p /home/ubuntu/.kube" ubuntu
+  - sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
+  - sudo su -c "sudo chown $(id -u):$(id -g) /home/ubuntu/.kube/config" ubuntu
 
   # Install calico
   - sudo su -c "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml" ubuntu
-
-# MetalLB for handling work in tghe 
-  # see what changes would be made, returns nonzero returncode if different
-kubectl get configmap kube-proxy -n kube-system -o yaml | \
-sed -e "s/strictARP: false/strictARP: true/" | \
-kubectl diff -f - -n kube-system
-
-# actually apply the changes, returns nonzero returncode on errors only
-kubectl get configmap kube-proxy -n kube-system -o yaml | \
-sed -e "s/strictARP: false/strictARP: true/" | \
-kubectl apply -f - -n kube-system
-
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
