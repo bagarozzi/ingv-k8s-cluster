@@ -55,7 +55,7 @@ runcmd:
   # kubeadm init command result
   - sudo su -c "mkdir -p /home/ubuntu/.kube" ubuntu
   - sudo cp -i /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
-  - sudo su -c "sudo chown $(id -u):$(id -g) /home/ubuntu/.kube/config" ubuntu
+  - sudo su -c "sudo chown $(sudo su -c "id -u" ubuntu):$(sudo su -c "id -g" ubuntu) /home/ubuntu/.kube/config" ubuntu
 
   # Install calico
   - sudo su -c "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml" ubuntu
