@@ -10,7 +10,7 @@ packages:
   - gpg
 
 runcmd:
-  # Enable ports as specified in the Kubernetes documentation
+  # Enable ports as specified in the Kubernetes documentatiobn
   - sudo ufw allow 6443,10250,10259,10257/tcp
   - sudo ufw allow 2379:2380/tcp
 
