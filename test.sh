@@ -4,7 +4,7 @@ kubeadm token create --print-join-command
 # Paste the result of the previous command on the workers. Mind that the token lasts 24 hours
 
 # Deploy the NodePort Ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/baremetal/deploy.yamls
 
 
 # Clone examples' repository
