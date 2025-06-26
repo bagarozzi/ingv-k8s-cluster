@@ -1,0 +1,8 @@
+# Kubernetes Cluster Nodes
+# First line should be the master node IP
+# Following lines should be worker node IPs
+# Lines starting with # are ignored
+# Empty lines are ignored
+
+172.17.10.190
+172.17.10.169
